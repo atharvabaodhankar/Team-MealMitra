@@ -8,6 +8,7 @@ import AcceptedPickups from '../components/AcceptedPickups'
 import VolunteerManager from '../components/VolunteerManager'
 import MapPanel from '../components/MapPanel'
 import ActivityLog from '../components/ActivityLog'
+import IoTMonitor from '../components/IoTMonitor'
 import FoodRequest from '../components/FoodRequest'
 import ExpiredFood from '../components/ExpiredFood'
 import NotificationToast from '../components/NotificationToast'
@@ -35,6 +36,7 @@ function DashboardInner() {
         volunteers: t('ngo.volunteerManagement'),
         map: t('ngo.operationsMap'),
         log: t('ngo.activityLog'),
+        iot: t('ngo.iotMonitor', 'IoT Real-time Sensor Hub'),
         'food-request': t('ngo.foodRequest', 'Targeted Food Request'),
         expired: t('ngo.expiredFood', 'Expired Food'),
     }
@@ -46,6 +48,7 @@ function DashboardInner() {
         volunteers: t('ngo.addEditManageVolunteers'),
         map: t('ngo.liveMapShowingDonations'),
         log: t('ngo.sessionActivityHistory'),
+        iot: t('ngo.iotMonitorSubtitle', 'Monitor real-time food spoilage parameters via ESP32 hardware devices'),
         'food-request': t('ngo.searchDonorInventory', 'Search donor inventory and request specific items'),
         expired: t('ngo.expiredFoodSubtitle', 'Accepted donations that were not picked up before expiration'),
     }
@@ -173,6 +176,8 @@ function DashboardInner() {
                 return <MapPanel />
             case 'log':
                 return <ActivityLog />
+            case 'iot':
+                return <IoTMonitor />
             case 'food-request':
                 return <FoodRequest />
             case 'expired':

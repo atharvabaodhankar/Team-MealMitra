@@ -1,0 +1,221 @@
+.iot-monitor {
+    padding: 1rem 0;
+}
+
+.iot-monitor-header {
+    margin-bottom: 2rem;
+}
+
+.iot-monitor-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--tundora);
+}
+
+.iot-monitor-header p {
+    color: var(--tundora);
+    opacity: 0.7;
+    font-size: 0.95rem;
+}
+
+.iot-monitor-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--white);
+    border-radius: 1rem;
+    padding: 4rem 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    text-align: center;
+    min-height: 400px;
+}
+
+.iot-pulse-icon {
+    color: var(--sun);
+    margin-bottom: 1.5rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.5; }
+}
+
+.iot-monitor-empty h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.iot-monitor-empty p {
+    color: var(--tundora);
+    opacity: 0.6;
+}
+
+.iot-devices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.iot-device-card {
+    background: var(--white);
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.iot-device-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+}
+
+.iot-status-fresh::before { background-color: var(--fruit-salad); }
+.iot-status-warning::before { background-color: var(--sun); }
+.iot-status-spoiled::before { background-color: var(--monza); }
+
+.iot-device-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.iot-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.iot-device-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.iot-status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.iot-status-fresh .iot-status-badge {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--fruit-salad);
+}
+
+.iot-status-warning .iot-status-badge {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--sun);
+}
+
+.iot-status-spoiled .iot-status-badge {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--monza);
+}
+
+.iot-card-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.iot-metric {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.iot-metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-temp { background: rgba(255, 87, 34, 0.1); color: #ff5722; }
+.bg-hum { background: rgba(3, 169, 244, 0.1); color: #03a9f4; }
+.bg-gas { background: rgba(156, 39, 176, 0.1); color: #9c27b0; }
+
+.iot-metric-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.iot-metric-label {
+    font-size: 0.8rem;
+    color: var(--tundora);
+    opacity: 0.6;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.iot-metric-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--tundora);
+}
+.iot-metric-value small {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+.spoilage-section {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+}
+
+.w-full { width: 100%; }
+.flex-between { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;}
+
+.iot-progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.iot-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out, background-color 0.5s ease;
+}
+
+.iot-metric-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--tundora);
+    opacity: 0.6;
+    margin-top: 0.5rem;
+}
+
+.iot-card-footer {
+    padding: 0.75rem 1.25rem;
+    background: rgba(0,0,0,0.02);
+    font-size: 0.75rem;
+    color: var(--tundora);
+    opacity: 0.6;
+    text-align: right;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
