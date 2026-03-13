@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5173')
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174,http://localhost:5175')
   .split(',')
   .map(o => o.trim())
   .filter(Boolean)
