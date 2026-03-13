@@ -17,6 +17,7 @@ export default function Sidebar({ activeView, onViewChange, collapsed, onToggleC
         { key: 'volunteers', label: t('volunteers'), icon: '◉' },
         { key: 'map', label: t('ngo.operationsMap'), icon: '◎' },
         { key: 'log', label: t('ngo.activityLog'), icon: '☰' },
+        { key: 'iot', label: t('ngo.iotMonitor', 'IoT Monitor'), icon: '📡' },
         { key: 'food-request', label: t('ngo.foodRequest', 'Food Request'), icon: '🔍' },
         { key: 'expired', label: t('ngo.expiredFood', 'Expired Food'), icon: '⚠' },
     ]
