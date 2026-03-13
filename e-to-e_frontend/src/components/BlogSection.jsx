@@ -72,7 +72,7 @@ const BlogSection = () => {
     }, [])
 
     return (
-        <section ref={sectionRef} className="blog section section--white" id="ngo-story">
+        <section ref={sectionRef} className="blog section section--white" id="blog">
             <div className="container">
                 <div className="text-center">
                     <span className="section__label blog__label">Stories</span>

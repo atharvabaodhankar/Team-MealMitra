@@ -27,7 +27,7 @@ const images = [
         size: 'normal',
     },
     {
-        src: 'https://scontent.fsse2-1.fna.fbcdn.net/v/t39.30808-6/493219278_1118688313609041_1028603906708738977_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=833d8c&_nc_ohc=sdiBLp3ihUIQ7kNvwH0ecqg&_nc_oc=AdlNVYwFpN9OaHBSZFyCS6IMU3qR2IdSD1aH4FrtBlvWztH5lKiLedBaITNk0jdppXoVv6X1skUDgmX-yAxNbGY4&_nc_zt=23&_nc_ht=scontent.fsse2-1.fna&_nc_gid=pUzr-MZDqDAcZfKsA46oIw&oh=00_AfuwWFgPy9eNWpfEOq_NfVxkBINWLKjQXXDDzrc2giUrLQ&oe=69954D4B',
+        src: 'https://i.pinimg.com/736x/dd/ec/37/ddec375cbe02d236e5a0e00238352cd1.jpg',
         alt: 'One Plate',
         size: 'tall',
     },

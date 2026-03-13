@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import './ImpactStories.css'
 
 /* ─────────────────────────────────────────────
@@ -7,6 +8,27 @@ import './ImpactStories.css'
    ───────────────────────────────────────────── */
 
 const ImpactStories = () => {
+    const location = useLocation()
+
+    /* ── Auto-scroll to hash target on mount / hash change ── */
+    useEffect(() => {
+        const hash = location.hash
+        if (!hash) return
+
+        // Small delay to let the DOM fully paint before scrolling
+        const timer = setTimeout(() => {
+            const id = hash.replace('#', '')
+            const el = document.getElementById(id)
+            if (el) {
+                // Offset for the fixed navbar (approx 80px)
+                const navbarOffset = 80
+                const top = el.getBoundingClientRect().top + window.scrollY - navbarOffset
+                window.scrollTo({ top, behavior: 'smooth' })
+            }
+        }, 300)
+
+        return () => clearTimeout(timer)
+    }, [location.hash])
     return (
         <>
             {/* ══════════ PAGE INTRO ══════════ */}

@@ -9,7 +9,9 @@ const THRESHOLD = 100
  * CarbonWallet
  *
  * Unified Impact Points + Carbon Credits display.
- * Fires the conversion animation when IP crosses 100.
+ * Fires the conversion animation when:
+ *   - IP crosses 100 during a live session
+ *   - User first lands on the page with IP >= 100 (first-visit trigger)
  *
  * @param {{ impact_points_balance: number, carbon_credits: number, lifetime_impact_points: number }} impactSummary
  * @param {boolean} loading
@@ -23,6 +25,7 @@ export default function CarbonWallet({ impactSummary, loading = false }) {
 
     // Track previous IP to detect threshold crossing
     const prevIPRef = useRef(null)
+    const hasTriggeredFirstVisit = useRef(false)
     const [animTrigger, setAnimTrigger] = useState(false)
 
     /* ── Animate arc fill ── */
@@ -95,10 +98,18 @@ export default function CarbonWallet({ impactSummary, loading = false }) {
             pulseIPCard()
         }
 
-        // Threshold crossing check: previous < 100 && new >= 100
+        // ═══ TRIGGER CONDITIONS ═══
+
+        // Condition 1: Live threshold crossing (prev < 100, now >= 100)
         if (prevIP !== null && prevIP < THRESHOLD && ip >= THRESHOLD) {
-            // slight delay so count-up finishes first
             setTimeout(() => setAnimTrigger(true), 1100)
+        }
+
+        // Condition 2: First visit — page loads with IP already >= 100
+        // (only fire once per mount, with a cinematic delay)
+        if (!hasTriggeredFirstVisit.current && prevIP === null && ip >= THRESHOLD) {
+            hasTriggeredFirstVisit.current = true
+            setTimeout(() => setAnimTrigger(true), 2000)
         }
 
         prevIPRef.current = ip

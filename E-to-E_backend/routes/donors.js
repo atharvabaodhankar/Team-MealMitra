@@ -5,6 +5,36 @@ const { authenticateUser } = require('../middleware/authMiddleware');
 const { donorOnly, adminOnly } = require('../middleware/roleGuards');
 const { getDonorImpact } = require('../services/impactService');
 
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const { data: donors, error } = await supabaseAdmin
+      .rpc('get_donor_leaderboard', { p_limit: 10 });
+
+    if (error) {
+      console.error('RPC Error:', error);
+      throw error;
+    }
+
+    // Map the RPC response to camelCase for the frontend
+    const leaderboard = (donors || []).map(d => ({
+      rank: d.rank,
+      donorId: d.donor_id,
+      donorName: d.donor_name || d.organization_name || 'Anonymous Donor',
+      totalMeals: d.total_meals || 0,
+      totalFoodKg: parseFloat(d.total_food_kg) || 0,
+      totalCo2Kg: parseFloat(d.total_co2_kg) || 0,
+      totalValue: parseFloat(d.total_value) || 0,
+      totalListings: d.total_listings || 0
+    }));
+
+    res.json(leaderboard);
+
+  } catch (error) {
+    console.error('Leaderboard error:', error);
+    res.status(500).json({ error: 'Failed to fetch leaderboard data' });
+  }
+});
+
 router.post('/', authenticateUser, donorOnly, async (req, res) => {
   try {
     const {
