@@ -302,13 +302,13 @@ router.get('/:donor_id', async (req, res) => {
 router.get('/', authenticateUser, async (req, res) => {
   try {
     const { city, verified } = req.query;
+    const isAdmin = req.user?.role === 'admin';
 
     let query = supabaseAdmin
       .from('donors')
       .select(`
         donor_id,
         business_type,
-        address,
         city,
         latitude,
         longitude,
@@ -316,11 +316,31 @@ router.get('/', authenticateUser, async (req, res) => {
         verification_status,
         created_at,
         profiles (
-          organization_name,
-          phone,
-          email
+          organization_name
         )
       `);
+
+    // Admins get full details including address and contact info
+    if (isAdmin) {
+      query = supabaseAdmin
+        .from('donors')
+        .select(`
+          donor_id,
+          business_type,
+          address,
+          city,
+          latitude,
+          longitude,
+          csr_participant,
+          verification_status,
+          created_at,
+          profiles (
+            organization_name,
+            phone,
+            email
+          )
+        `);
+    }
 
     if (city) {
       query = query.ilike('city', `%${city}%`);

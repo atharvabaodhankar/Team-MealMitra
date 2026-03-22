@@ -5,6 +5,7 @@ const { authenticateUser } = require('../middleware/authMiddleware');
 const { ngoOnly } = require('../middleware/roleGuards');
 const { sendDeliveryAlert, sendCompletionNotice } = require('../services/notificationService');
 const { sendDeliveryAssignedEmail, sendDeliveryCompletedEmail } = require('../services/emailService');
+const { setVolunteerBusy, setVolunteerAvailable } = require('../services/volunteerService');
 
 router.post('/', authenticateUser, ngoOnly, async (req, res) => {
   try {
@@ -91,6 +92,11 @@ router.post('/', authenticateUser, ngoOnly, async (req, res) => {
         .select('full_name, phone')
         .eq('volunteer_id', volunteer_id)
         .single();
+
+      // Mark volunteer as busy so they won't be double-assigned
+      setVolunteerBusy(volunteer_id).catch(err =>
+        console.error('[DELIVERIES] Failed to mark volunteer busy:', err)
+      );
 
       sendDeliveryAlert(req.user.phone, volunteer.full_name, 'assigned').catch(err => {
         console.error('Failed to send delivery alert:', err);
@@ -362,9 +368,15 @@ router.put('/:delivery_id/status', authenticateUser, ngoOnly, async (req, res) =
       });
     }
 
+    // Free up the volunteer when delivery is done (either way)
+    if ((status === 'delivered' || status === 'failed') && delivery.volunteer_id) {
+      setVolunteerAvailable(delivery.volunteer_id).catch(err =>
+        console.error('[DELIVERIES] Failed to mark volunteer available:', err)
+      );
+    }
+
     if (status === 'delivered') {
       const listing = existingDelivery.ngo_claims.food_listings;
-
       const co2Reduced = parseFloat(listing.quantity_kg) * 2.5;
 
       sendCompletionNotice(

@@ -23,7 +23,24 @@ const sendNotification = async (phoneNumber, messageType, messageBody, additiona
       if (!phoneNumber || !phoneNumber.startsWith('+')) {
         throw new Error(`Invalid phone number format: ${phoneNumber}`);
       }
-} else {
+
+      // Send Firebase Cloud Messaging notification to the topic derived from the phone number.
+      // Devices must subscribe to the topic `phone_<e164number_stripped>` on the client side.
+      const topic = `phone_${phoneNumber.replace(/[^0-9]/g, '')}`;
+      await messaging.send({
+        topic,
+        notification: {
+          title: 'Extra-To-Essential',
+          body: messageBody,
+        },
+        data: {
+          messageType,
+          ...Object.fromEntries(
+            Object.entries(additionalData).map(([k, v]) => [k, String(v)])
+          ),
+        },
+      });
+    } else {
       console.warn('Firebase Messaging not configured. Skipping push notification.');
     }
 

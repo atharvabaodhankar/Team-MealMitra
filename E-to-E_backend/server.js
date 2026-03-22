@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,25 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiters
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests', message: 'Please try again after 15 minutes' },
+});
+
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests', message: 'Please slow down' },
+});
+
+app.use('/api/', generalLimiter);
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
@@ -66,7 +86,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/donors', donorRoutes);
 app.use('/api/ngos', ngoRoutes);
 app.use('/api/listings', listingRoutes);
@@ -87,7 +107,9 @@ const {
   sendDeliveryCompletedEmail,
 } = require('./services/emailService');
 
-app.get('/test-email', async (req, res) => {
+// Test email endpoint — development only
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/test-email', async (req, res) => {
   const template = req.query.template || 'welcomeDonor';
   const to = req.query.to || process.env.EMAIL_USER || 'test@example.com';
 
@@ -123,7 +145,8 @@ app.get('/test-email', async (req, res) => {
     console.error(`[TEST-EMAIL] Error:`, error);
     res.status(500).json({ error: 'Email failed', message: error.message });
   }
-});
+  });
+} // end NODE_ENV !== 'production'
 
 app.use((req, res) => {
   res.status(404).json({
@@ -148,6 +171,19 @@ io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
   socket.on('join_room', (room) => {
+    // Only allow joining well-known room patterns to prevent unauthorized access
+    const allowedPatterns = [
+      /^user_[a-zA-Z0-9_-]+$/,
+      /^ngo_[a-zA-Z0-9_-]+$/,
+      /^donor_[a-zA-Z0-9_-]+$/,
+      /^delivery_[a-zA-Z0-9_-]+$/,
+      /^iot_[a-zA-Z0-9_-]+$/,
+    ];
+    const isAllowed = allowedPatterns.some(p => p.test(room));
+    if (!isAllowed) {
+      console.warn(`[Socket.IO] Blocked join attempt for room: "${room}" by ${socket.id}`);
+      return;
+    }
     socket.join(room);
     console.log(`User ${socket.id} joined room: ${room}`);
   });
@@ -185,18 +221,6 @@ process.on('SIGTERM', () => {
   server.close(() => {
     console.log('HTTP server closed');
   });
-});
-
-console.log({
-  authRoutes,
-  donorRoutes,
-  ngoRoutes,
-  listingRoutes,
-  claimRoutes,
-  deliveryRoutes,
-  impactRoutes,
-  geocodeRoutes,
-  adminRoutes
 });
 
 module.exports = app;

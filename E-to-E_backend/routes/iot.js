@@ -1,8 +1,25 @@
 const express = require('express');
 const router = express.Router();
 
+// Simple device key middleware — set IOT_DEVICE_KEY in .env
+const iotAuth = (req, res, next) => {
+  const deviceKey = process.env.IOT_DEVICE_KEY;
+  if (!deviceKey) {
+    // If no key configured, allow in development; block in production
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(503).json({ error: 'IoT endpoint not configured' });
+    }
+    return next();
+  }
+  const provided = req.headers['x-device-key'] || req.body?.deviceKey;
+  if (provided !== deviceKey) {
+    return res.status(401).json({ error: 'Invalid device key' });
+  }
+  next();
+};
+
 // This endpoint receives data from the ESP32 IoT Device
-router.post('/data', async (req, res) => {
+router.post('/data', iotAuth, async (req, res) => {
   try {
     const {
       deviceID,

@@ -104,7 +104,7 @@ router.post('/', authenticateUser, ngoOnly, async (req, res) => {
 
       let assignedDelivery = null;
       try {
-        const bestVolunteer = await findBestVolunteer(ngo.ngo_id);
+        const bestVolunteer = await findBestVolunteer(ngo.ngo_id, listing.latitude, listing.longitude);
         if (bestVolunteer) {
           console.log('[CLAIMS] Auto-assigning volunteer:', bestVolunteer.full_name);
           const { data: delivery, error: delErr } = await supabaseAdmin
@@ -119,6 +119,9 @@ router.post('/', authenticateUser, ngoOnly, async (req, res) => {
 
           if (!delErr && delivery) {
             assignedDelivery = { ...delivery, volunteer: bestVolunteer };
+            // Mark volunteer as busy to prevent double-assignment
+            const { setVolunteerBusy } = require('../services/volunteerService');
+            setVolunteerBusy(bestVolunteer.volunteer_id).catch(() => {});
             sendDeliveryAlert(ngo.phone || 'NGO_ADMIN', bestVolunteer.full_name, 'assigned').catch(() => { });
           }
         }
@@ -212,7 +215,7 @@ router.post('/', authenticateUser, ngoOnly, async (req, res) => {
 
     let assignedDelivery = null;
     try {
-      const bestVolunteer = await findBestVolunteer(ngo.ngo_id);
+      const bestVolunteer = await findBestVolunteer(ngo.ngo_id, listing.latitude, listing.longitude);
       if (bestVolunteer) {
         console.log('[CLAIMS] Auto-assigning volunteer (fallback):', bestVolunteer.full_name);
         const { data: delivery, error: delErr } = await supabaseAdmin
@@ -227,6 +230,8 @@ router.post('/', authenticateUser, ngoOnly, async (req, res) => {
 
         if (!delErr && delivery) {
           assignedDelivery = { ...delivery, volunteer: bestVolunteer };
+          const { setVolunteerBusy } = require('../services/volunteerService');
+          setVolunteerBusy(bestVolunteer.volunteer_id).catch(() => {});
           sendDeliveryAlert(ngo.phone || 'NGO_ADMIN', bestVolunteer.full_name, 'assigned').catch(() => { });
         }
       }
